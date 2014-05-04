@@ -7,5 +7,7 @@ TO DO
 - Improve sounds and Graphics
 - Use an spritesheet for the squares and add them animations.
 
-[Play](http://joseadrian.github.io/kodotick)
+Play
 ====
+- [Gamejolt.io](http://gamejolt.com/games/strategy-sim/kodotick/26126/)
+- [Github Pages](http://joseadrian.github.io/kodotick)
