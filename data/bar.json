@@ -1,0 +1,11 @@
+{
+  "bar":
+  {
+    "sx":0,
+    "sy":0,
+    "cols":8,
+    "tilew":30,
+    "tileh":1,
+    "frames":8
+  }
+}
