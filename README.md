@@ -1,8 +1,10 @@
 TO DO
 =====
 
-- Fix scaleToFit for Chrome
-- Use an spritesheet with the alphabet for text
+- ~~Fix scaleToFit for Chrome~~ 
+  - scaleToFit was removed and all the sprites and movements were scaled.
+- ~~Use an spritesheet with the alphabet for text~~
+  - Only digits
 - Remove the joypad and buttons
 - Improve sounds and Graphics
 - Use an spritesheet for the squares and add them animations.
