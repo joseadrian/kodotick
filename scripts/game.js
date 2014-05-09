@@ -4,7 +4,7 @@ window.addEventListener("load",function() {
   var SCALE = 18;
   
   // Config
-  var Q = Quintus({ development: true, audioSupported: ['ogg', 'wav', 'mp3'] })
+  var Q = Quintus({ audioSupported: ['ogg', 'wav', 'mp3'] })
   .include("Sprites, Scenes, Input, 2D, Anim, Audio, Touch, UI");
 
   Q.setup({
