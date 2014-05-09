@@ -1,0 +1,82 @@
+{
+  "digit0": {
+    "tilew":4,
+    "tileH":5,
+    "sx": 0,
+    "sy": 0,
+    "w": 4,
+    "h": 5
+  },
+  "digit1": {
+    "tilew":4,
+    "tileH": 5,
+    "sx": 4,
+    "sy": 0,
+    "w": 4,
+    "h": 5
+  },
+  "digit2": {
+    "tilew": 4,
+    "tileH": 5,
+    "sx": 8,
+    "sy": 0,
+    "w": 4,
+    "h": 5
+  },
+  "digit3": {
+    "tilew":4,
+    "tileH":5,
+    "sx": 12,
+    "sy": 0,
+    "w": 4,
+    "h": 5
+  },
+  "digit4": {
+    "tilew":4,
+    "tileH":5,
+    "sx": 16,
+    "sy": 0,
+    "w": 4,
+    "h": 5
+  },
+  "digit5": {
+    "tilew":4,
+    "tileH":5,
+    "sx": 20,
+    "sy": 0,
+    "w": 4,
+    "h": 5
+  },
+  "digit6": {
+    "tilew":4,
+    "tileH":5,
+    "sx": 24,
+    "sy": 0,
+    "w": 4,
+    "h": 5
+  },
+  "digit7": {
+    "tilew":4,
+    "tileH":5,
+    "sx": 28,
+    "sy": 0,
+    "w": 4,
+    "h": 5
+  },
+  "digit8": {
+    "tilew":4,
+    "tileH":5,
+    "sx": 32,
+    "sy": 0,
+    "w": 4,
+    "h": 5
+  },
+  "digit9": {
+    "tilew":4,
+    "tileH":5,
+    "sx": 36,
+    "sy": 0,
+    "w": 4,
+    "h": 5
+  }
+}

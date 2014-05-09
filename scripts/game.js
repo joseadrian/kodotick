@@ -1,15 +1,15 @@
 window.addEventListener("load",function() {
   
   var interval_ss, interval_ns;
+  var SCALE = 18;
   
   // Config
   var Q = Quintus({ development: true, audioSupported: ['ogg', 'wav', 'mp3'] })
   .include("Sprites, Scenes, Input, 2D, Anim, Audio, Touch, UI");
 
   Q.setup({
-    width:   32, 
-    height:  32,
-    scaleToFit: true
+    width:   32 * SCALE, 
+    height:  32 * SCALE
   }).controls(false).enableSound().touch();
   
   Q.input.mouseControls({ cursor: 'on' });
@@ -49,20 +49,25 @@ window.addEventListener("load",function() {
       this._super(p, {
         sheet: 'bar',
         sprite: 'bar',
+        w: 30,
+        h: 1,
         cx: 0,
         cy: 0,
-        x: 1,
-        y: 1,
+        x: Q.el.width / 2,
+        y: 10,
         type: 0
         
         // mode
         // time: 3  (Pseudo)
+        
+        , scale: SCALE
       });
+      
+      this.p.fw = this.p.w * SCALE;
       
       this.add('animation');
       this.play(this.p.mode);
       this.on('inserted');
-      this.on('loop');
     },
     inserted: function() {
       Q.audio.stop('bonus_' + this.p.mode + '.mp3');
@@ -72,10 +77,20 @@ window.addEventListener("load",function() {
       Q.audio.stop('bonus_' + this.p.mode + '.mp3');
       Q('Kodotick').trigger('finish_bonus', this.p.mode);
     },
+    draw: function(ctx) {
+      ctx.fillStyle = this.p.color;
+      ctx.fillRect(-this.p.cx, -this.p.cy, this.p.w, this.p.h);
+    },
     step: function(dt) {
-      this.p.x -= this.p.time * dt;
+      this.p.fw -= this.p.time / 2;
+      this.p.w   = this.p.fw - this.p.fw % SCALE;
+      this.p.cx  = this.p.w / 2;
       
-      if(this.p.x < -this.p.w) {
+      if(this.p.mode == 'special') {
+        this.p.color = Q.randomColor();
+      }
+      
+      if(this.p.w <= 0) {
         this.destroy();
       }
     }
@@ -101,6 +116,8 @@ window.addEventListener("load",function() {
         gravityY: 0,
         speed: 0,
         special: false
+        
+        , scale: SCALE
       });
       
       this.add('2d');
@@ -111,7 +128,7 @@ window.addEventListener("load",function() {
       }
       // 0: Top, 1: Right, 2: bottom, 3: left
       this.p.direction = Math.round(Math.random() * 3);
-      this.p.speed  = Math.floor(Math.random() * 5 + 5);
+      this.p.speed     = Math.random() * 3 + 1;
       
       switch(this.p.direction) {
           case 0:
@@ -133,6 +150,9 @@ window.addEventListener("load",function() {
             this.p.x = 0;
           break;
       }
+      
+      this.p.fx = this.p.x = this.p.x - this.p.x % SCALE;
+      this.p.fy = this.p.y = this.p.y - this.p.y % SCALE;
     },
     hit: function(col) {
       if( col.obj.isA('Square') && !col.obj.p.special) {
@@ -156,9 +176,13 @@ window.addEventListener("load",function() {
       }
       
       if(this.p.direction % 2 == 0) {
-        this.p.vy = Math.round(this.p.speed);
+        this.p.fy += this.p.speed;
+        this.p.y = this.p.fy - this.p.fy % SCALE;
+        // this.p.vy = Math.round(this.p.speed);
       } else {
-        this.p.vx = this.p.speed;
+        this.p.fx += this.p.speed;
+        this.p.x = this.p.fx - this.p.fx % SCALE;
+        // this.p.vx = this.p.speed;
       }
       
       if(this.p.special) {
@@ -179,6 +203,8 @@ window.addEventListener("load",function() {
         gravityY: 0,
         
         block: false
+        
+        , scale: SCALE
       });
       
       this.p.color = Q.randomColor();
@@ -237,11 +263,11 @@ window.addEventListener("load",function() {
       }
       
       if(Q.inputs['left'] || Q.inputs['right']) {
-        this.p.x += Q.inputs['left'] ? - 1 : 1;
+        this.p.x += (Q.inputs['left'] ? - 1 : 1) * SCALE;
       }
       
       if(Q.inputs['up'] || Q.inputs['down']) {
-        this.p.y += Q.inputs['up'] ? -1 : 1; 
+        this.p.y += (Q.inputs['up'] ? -1 : 1) * SCALE; 
       }
     },
     draw: function(ctx) {
@@ -256,6 +282,9 @@ window.addEventListener("load",function() {
       if(Q.inputSelected == 'mouse' && (Q.inputs['mouseX'] && Q.inputs['mouseY'])) {
         this.p.x = Math.floor(Q.inputs['mouseX']);
         this.p.y = Math.floor(Q.inputs['mouseY']);
+        
+        this.p.x = this.p.x - this.p.x % SCALE;
+        this.p.y = this.p.y - this.p.y % SCALE;
       }
       
       if(this.p.x < 0) {
@@ -281,8 +310,24 @@ window.addEventListener("load",function() {
       this._super(p,{
         x: Q.width/2,
         y: Q.height/2,
-        type: 0
+        type: 0,
+        scale: SCALE
       });
+    }
+  });
+  
+  Q.Sprite.extend("Digit", {
+    init: function(p) {
+      this._super(p, {
+        cx: 0,
+        sprite: 'digits',
+        sheet: 'digit' + p.digit, 
+        x: Q.width/2, 
+        y: Q.height/2,
+        scale: SCALE
+      });
+      
+      this.p.x += this.p.move * this.p.w * SCALE;
     }
   });
   
@@ -301,14 +346,14 @@ window.addEventListener("load",function() {
     stage.insert(new Q.Element({ asset: 'background.png' }));
     stage.insert(new Q.Element({ asset: 'main.png' }));
     
-    var arrow = stage.insert(new Q.Element({ asset: 'arrow.png', x: 28, y: 22, angle: 180 }));
+    var arrow = stage.insert(new Q.Element({ asset: 'arrow.png', x: 27.5 * SCALE, y: 21.5 * SCALE, angle: 180 }));
     var selected = null;
     
-    stage.insert(new Q.UI.Button({ x: 10, y: 22, w: 18, h: 4 }, function() {
+    stage.insert(new Q.UI.Button({ x: 10 * SCALE, y: 22 * SCALE, w: 18 * SCALE, h: 4 * SCALE }, function() {
       if(selected == null) selected = Q.controlClick(arrow, 90, 'mouse');
     }));
     
-    stage.insert(new Q.UI.Button({ x: 16, y: 29, w: 30, h: 5 }, function() {
+    stage.insert(new Q.UI.Button({ x: 16 * SCALE, y: 29 * SCALE, w: 30 * SCALE, h: 5 * SCALE }, function() {
       if( selected == null) selected = Q.controlClick(arrow, 0, 'keyboard');
     }));
   });
@@ -334,21 +379,20 @@ window.addEventListener("load",function() {
     stage.insert(new Q.Element({ asset: 'background.png' }));
     stage.insert(new Q.Element({ asset: 'gameover.png' }));
    
-    stage.insert(new Q.UI.Text({ 
-      size: 10,
-      label: "" + Q.state.get('points'),
-      family: 'Vidya',
-      color: 'black',
-      x: Q.width/2, 
-      y: Q.height/2,
-      align: 'center'
-    }));
+    // "Custom font"
+    var points = "" + Q.state.get('points');
+    points = points.split("");
+
+    for(i = 0; i < points.length; i++) {
+      stage.insert(new Q.Digit({ digit: points[i], move: i - points.length/2 }));
+    }
     
-    stage.insert(new Q.UI.Button({ x: 4, y: 22, cx: 0, cy: 0, w: 15, h: 15, radius: 0 }, function() {
+    // Buttons: Menu / Play Again
+    stage.insert(new Q.UI.Button({ x: 4 * SCALE, y: 22 * SCALE, cx: 0 * SCALE, cy: 0 * SCALE, w: 15 * SCALE, h: 15 * SCALE, radius: 0 }, function() {
       Q.stageScene('Menu');
     }));
 
-    stage.insert(new Q.UI.Button({ x: 19, y: 22, cx: 0, cy: 0, w: 15, h: 15, radius: 0 }, function() {
+    stage.insert(new Q.UI.Button({ x: 19 * SCALE, y: 22 * SCALE, cx: 0 * SCALE, cy: 0 * SCALE, w: 15 * SCALE, h: 15 * SCALE, radius: 0 }, function() {
       Q.stageScene('Game');
     }));
     
@@ -364,7 +408,7 @@ window.addEventListener("load",function() {
     // Normal Squares
     interval_ns = setInterval(function() {
       stage.insert(new Q.Square());
-    }, 100);
+    }, 1e2);
     
     // Special Squares
     interval_ss = setInterval(function() {
@@ -377,20 +421,21 @@ window.addEventListener("load",function() {
       }
       
       stage.insert(new Q.Square(opts));
-    }, 3e4);
+    }, 1e4);
   });
 
   // Ready...
   Q.load([
     // images
-    'background.png', 'main.png', 'arrow.png', 'bar.png', 'gameover.png',
+    'background.png', 'main.png', 'arrow.png', 'bar.png', 'gameover.png', 'digits.png',
     // data
-    'bar.json',
+    'bar.json', 'digits.json',
     // audios
     'hit.mp3', 'point_special.mp3', 'point.mp3', 'explosion.mp3', 'gameover.mp3', 
     'bonus_special.mp3', 'bonus_block.mp3'
   ], function() {
     Q.compileSheets('bar.png', 'bar.json');
+    Q.compileSheets('digits.png', 'digits.json');
     
     Q.stageScene('Menu');
   });
